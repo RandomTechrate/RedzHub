@@ -1,5 +1,5 @@
 // Backend URL for the Survival server
-const BACKEND_URL = "http://10.49.9.7:18000";
+const BACKEND_URL = "http://83.168.106.235:21000"; // Updated to use port 21000
 
 // Function to check the server's status
 function checkServerStatus() {
