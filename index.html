@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IceMC Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            color: #f5f5f5;
+            padding: 20px;
+        }
+        h1 {
+            color: #c77dff;
+        }
+        .section {
+            background: #252744;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #7b2cbf;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #9d4edd;
+        }
+        #serverStatus {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛠 IceMC Control Panel</h1>
 
+    <div class="section">
+        <h2>📡 Server Status: <span id="serverStatus">Checking...</span></h2>
+    </div>
+
+    <div class="section">
+        <h2>💻 Execute Command</h2>
+        <input type="text" id="commandInput" placeholder="Enter server command..." />
+        <button onclick="executeCommand()">Run</button>
+        <pre id="commandOutput"></pre>
+    </div>
+
+    <script>
+        const BACKEND_URL = "http://localhost:8080";
+
+        // Check Server Status
+        function checkServerStatus() {
+            fetch(`${BACKEND_URL}/status`)
+                .then(res => res.text())
+                .then(data => {
+                    const statusEl = document.getElementById("serverStatus");
+                    statusEl.innerText = data;
+                })
+                .catch(() => {
+                    const statusEl = document.getElementById("serverStatus");
+                    statusEl.innerText = "🔴 Offline";
+                    statusEl.style.color = "#f87171";
+                });
+        }
+        checkServerStatus();
+        setInterval(checkServerStatus, 10000);
+
+        // Execute Minecraft Command
+        function executeCommand() {
+            const command = document.getElementById("commandInput").value;
+
+            fetch(`${BACKEND_URL}/command`, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: command,
+            })
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("commandOutput").textContent = data;
+                })
+                .catch(err => {
+                    document.getElementById("commandOutput").textContent = "Error: " + err.message;
+                });
+        }
+    </script>
+</body>
+</html>
